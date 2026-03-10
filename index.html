@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Qaza Namaz Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="app__header">
+      <h1>Qaza Namaz Calculator</h1>
+      <p>Estimate your missed prayers and plan your recovery.</p>
+    </header>
+
+    <section class="app__section inputs">
+      <div class="field-grid">
+        <label class="field">
+          <span>Years Missed</span>
+          <input id="yearsMissed" type="number" min="0" value="0" />
+        </label>
+
+        <label class="field">
+          <span>Months Missed</span>
+          <input id="monthsMissed" type="number" min="0" max="11" value="0" />
+        </label>
+      </div>
+
+      <div class="gender-wrap">
+        <span class="group-label">Gender</span>
+        <div class="segmented" role="radiogroup" aria-label="Gender">
+          <button id="maleBtn" class="segmented__btn active" data-gender="male" type="button" aria-pressed="true">Male</button>
+          <button id="femaleBtn" class="segmented__btn" data-gender="female" type="button" aria-pressed="false">Female</button>
+        </div>
+      </div>
+
+      <section id="femaleFields" class="female-fields" hidden>
+        <label class="field">
+          <span>Avg. Menstrual Days per Month</span>
+          <input id="menstrualDays" type="number" min="0" max="15" value="6" />
+        </label>
+        <p class="hint">These days will be deducted from calculation.</p>
+      </section>
+    </section>
+
+    <section class="app__section results">
+      <h2>Total Days to Make Up</h2>
+      <p id="totalDays" class="big-number">0</p>
+
+      <div class="cards" id="prayerCards"></div>
+
+      <hr />
+
+      <div class="plan">
+        <label class="field plan-input">
+          <span>Recovery Plan: Daily Qaza Target</span>
+          <div class="inline">
+            <input id="dailyTarget" type="number" min="1" value="5" />
+            <small>full days of prayer per day</small>
+          </div>
+        </label>
+
+        <div id="planOutput" class="plan-output">Enter missed years to see your plan.</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
