@@ -9,6 +9,14 @@
   --border: #324866;
   --pink-bg: #2a1f42;
   --pink-border: #6f2f8b;
+  --bg: #0a1223;
+  --card: #111f3a;
+  --card-soft: #1a2a46;
+  --text: #ffffff;
+  --muted: #9cb2d8;
+  --accent: #14cf96;
+  --accent-soft: #1ebd8e;
+  --border: rgba(119, 149, 196, 0.25);
 }
 
 * {
@@ -21,6 +29,10 @@ body {
   background: linear-gradient(160deg, #061024, #20314f);
   color: var(--text);
   min-height: 100vh;
+  min-height: 100vh;
+  font-family: Inter, Segoe UI, Roboto, system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at top, #16294c 0%, #090f1d 55%);
+  color: var(--text);
   display: grid;
   place-items: center;
   padding: 24px;
@@ -66,6 +78,39 @@ body {
   display: grid;
   gap: 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+.app {
+  width: min(920px, 100%);
+  background: linear-gradient(135deg, #081126, #1d2f51);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.app__header,
+.app__section {
+  padding: 30px;
+}
+
+.app__header {
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+}
+
+.app__header p {
+  color: var(--muted);
+  margin: 6px 0 0;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
 }
 
 .field {
@@ -77,6 +122,12 @@ body {
 .field > span,
 .field-inline > span {
   font-weight: 700;
+  gap: 8px;
+}
+
+.field > span,
+.group-label {
+  font-weight: 600;
 }
 
 input {
@@ -119,6 +170,50 @@ input:focus {
 .female-panel {
   border: 1px solid var(--pink-border);
   background: var(--pink-bg);
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(141, 170, 212, 0.22);
+  color: var(--text);
+  padding: 0 14px;
+  font-size: 1.2rem;
+}
+
+.gender-wrap {
+  margin-top: 16px;
+}
+
+.segmented {
+  margin-top: 8px;
+  background: rgba(67, 94, 136, 0.3);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+}
+
+.segmented__btn {
+  border: none;
+  height: 40px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.08rem;
+  font-weight: 650;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.segmented__btn.active {
+  color: #032a20;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+}
+
+.female-fields {
+  margin-top: 16px;
+  border: 1px solid rgba(232, 85, 212, 0.45);
+  background: rgba(79, 27, 90, 0.32);
   border-radius: 10px;
   padding: 14px;
 }
@@ -145,11 +240,34 @@ input:focus {
   text-align: center;
   font-size: clamp(2.6rem, 5.2vw, 4rem);
   font-weight: 800;
+.hint {
+  margin: 10px 0 0;
+  color: #ffb6ea;
+}
+
+.results {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.results h2 {
+  text-align: center;
+  color: #04df9c;
+  letter-spacing: 0.04em;
+  margin: 0;
+  font-size: 1.55rem;
+}
+
+.big-number {
+  text-align: center;
+  font-size: clamp(2.8rem, 6vw, 4rem);
+  margin: 8px 0 20px;
+  font-weight: 700;
 }
 
 .cards {
   display: grid;
   grid-template-columns: repeat(6, minmax(120px, 1fr));
+  grid-template-columns: repeat(6, minmax(100px, 1fr));
   gap: 12px;
 }
 
@@ -159,6 +277,10 @@ input:focus {
   border-radius: 14px;
   text-align: center;
   padding: 14px 8px;
+  border-radius: 14px;
+  padding: 14px 10px;
+  background: rgba(122, 151, 197, 0.08);
+  text-align: center;
 }
 
 .card h3 {
@@ -188,6 +310,27 @@ input:focus {
 }
 
 .inline-input-wrap {
+  font-size: 1.4rem;
+}
+
+.card small {
+  color: var(--muted);
+}
+
+.card .count {
+  margin-top: 8px;
+  color: #65ffcc;
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+hr {
+  margin: 22px 0;
+  border: 0;
+  border-top: 1px dashed rgba(198, 217, 255, 0.18);
+}
+
+.inline {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -236,5 +379,47 @@ input:focus {
   .inline-input-wrap {
     flex-direction: column;
     align-items: flex-start;
+.plan-input input {
+  width: 96px;
+}
+
+.inline small {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.plan-output {
+  margin-top: 14px;
+  border-radius: 10px;
+  text-align: center;
+  padding: 12px;
+  background: rgba(31, 175, 179, 0.22);
+  border: 1px solid rgba(62, 205, 208, 0.15);
+  font-size: 1.1rem;
+}
+
+@media (max-width: 860px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(120px, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  body {
+    padding: 10px;
+  }
+
+  .app__header,
+  .app__section {
+    padding: 18px;
+  }
+
+  .cards {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+
+  .inline {
+    flex-direction: column;
+    align-items: start;
   }
 }
