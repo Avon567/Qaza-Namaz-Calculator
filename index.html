@@ -1,98 +1,25 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qaza Namaz Calculator</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <main class="container">
-      <header class="header">
-        <h1>Qaza Namaz Calculator</h1>
-        <p>Estimate your missed prayers and build a realistic recovery plan.</p>
-      </header>
-
-      <section class="panel input-panel" aria-label="Input fields">
-        <div class="grid-two">
-          <label class="field">
-            <span>Years Missed</span>
-            <input id="yearsMissed" type="number" min="0" max="120" value="0" />
-          </label>
-
-          <label class="field">
-            <span>Months Missed</span>
-            <input id="monthsMissed" type="number" min="0" max="11" value="0" />
-          </label>
-        </div>
-
-        <div class="field" role="group" aria-labelledby="genderLegend">
-          <span id="genderLegend">Gender</span>
-          <div class="segmented" id="genderSwitch">
-            <button type="button" data-gender="male" class="active">Male</button>
-            <button type="button" data-gender="female">Female</button>
-          </div>
-        </div>
-
-        <div id="femalePanel" class="female-panel hidden">
-          <label class="field">
-            <span>Avg. Menstrual Days per Month</span>
-            <input id="menstrualDays" type="number" min="0" max="15" placeholder="e.g. 6" />
-          </label>
-          <small>These days are deducted from total make-up days.</small>
-        </div>
-      </section>
-
-      <section class="panel result-panel" aria-live="polite">
-        <h2>Total Days to Make Up</h2>
-        <p id="totalDays" class="big-number">0</p>
-
-        <div class="cards" id="prayerCards"></div>
-
-        <div class="recovery">
-          <label class="field-inline">
-            <span>Recovery Plan: Daily Qaza Target</span>
-            <div class="inline-input-wrap">
-              <input id="dailyTarget" type="number" min="1" max="50" value="5" />
-              <span>full days of prayer per day</span>
-            </div>
-          </label>
-
-          <div id="planMessage" class="plan-message">
-            Enter missed years to see your plan.
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <script src="script.js"></script>
-  </body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Qaza Namaz Calculator</title>
+  <title>Qaza Namaz Calculator (Improved)</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <header class="app__header">
       <h1>Qaza Namaz Calculator</h1>
-      <p>Estimate your missed prayers and plan your recovery.</p>
+      <p>Estimate missed obligatory prayers and build a practical recovery plan.</p>
+      <p class="note">Note: This tool is an estimate helper. Please verify with a trusted local scholar for your personal fiqh case.</p>
     </header>
 
-    <section class="app__section inputs">
-      <div class="field-grid">
+    <section class="panel">
+      <h2>1) Missed Period</h2>
+      <div class="grid two">
         <label class="field">
           <span>Years Missed</span>
-          <input id="yearsMissed" type="number" min="0" value="0" />
+          <input id="yearsMissed" type="number" min="0" max="120" value="0" />
         </label>
 
         <label class="field">
@@ -101,41 +28,78 @@
         </label>
       </div>
 
-      <div class="gender-wrap">
-        <span class="group-label">Gender</span>
-        <div class="segmented" role="radiogroup" aria-label="Gender">
-          <button id="maleBtn" class="segmented__btn active" data-gender="male" type="button" aria-pressed="true">Male</button>
-          <button id="femaleBtn" class="segmented__btn" data-gender="female" type="button" aria-pressed="false">Female</button>
+      <div class="grid two">
+        <label class="field">
+          <span>Calculation Basis</span>
+          <select id="calendarType">
+            <option value="lunar" selected>Lunar (Islamic) — 354 days/year</option>
+            <option value="solar">Solar (Gregorian) — 365 days/year</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Daily Missed Ratio</span>
+          <input id="missedRatio" type="number" min="1" max="5" step="1" value="5" />
+          <small>How many daily prayers were typically missed (1 to 5).</small>
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>2) Fiqh Settings</h2>
+      <div class="grid two">
+        <div>
+          <span class="label">Gender</span>
+          <div class="segmented" role="radiogroup" aria-label="Gender">
+            <button id="maleBtn" class="segmented__btn active" type="button" aria-pressed="true">Male</button>
+            <button id="femaleBtn" class="segmented__btn" type="button" aria-pressed="false">Female</button>
+          </div>
         </div>
+
+        <label class="field checkbox-line">
+          <span>Include Witr in total</span>
+          <input id="includeWitr" type="checkbox" checked />
+          <small>Commonly treated as wajib in Hanafi fiqh.</small>
+        </label>
       </div>
 
-      <section id="femaleFields" class="female-fields" hidden>
-        <label class="field">
-          <span>Avg. Menstrual Days per Month</span>
-          <input id="menstrualDays" type="number" min="0" max="15" value="6" />
-        </label>
-        <p class="hint">These days will be deducted from calculation.</p>
+      <section id="femaleFields" class="female-box" hidden>
+        <div class="grid two">
+          <label class="field">
+            <span>Avg. Menstrual Days per Month</span>
+            <input id="menstrualDays" type="number" min="0" max="15" value="6" />
+          </label>
+
+          <label class="field">
+            <span>Estimated Total Nifas Days (overall)</span>
+            <input id="nifasDays" type="number" min="0" max="400" value="0" />
+          </label>
+        </div>
+        <p class="female-note">Hayd and nifas are excluded from qaza obligation.</p>
       </section>
     </section>
 
-    <section class="app__section results">
-      <h2>Total Days to Make Up</h2>
+    <section class="panel results">
+      <h2>3) Qaza Estimate</h2>
+      <p class="total-title">Total Obligatory Prayer-Days to Make Up</p>
       <p id="totalDays" class="big-number">0</p>
 
-      <div class="cards" id="prayerCards"></div>
-
-      <hr />
+      <div id="prayerCards" class="cards"></div>
 
       <div class="plan">
-        <label class="field plan-input">
-          <span>Recovery Plan: Daily Qaza Target</span>
-          <div class="inline">
-            <input id="dailyTarget" type="number" min="1" value="5" />
-            <small>full days of prayer per day</small>
-          </div>
-        </label>
+        <h3>Recovery Plan</h3>
+        <div class="grid two">
+          <label class="field">
+            <span>Qaza Days Completed per Day</span>
+            <input id="dailyTarget" type="number" min="1" max="20" value="3" />
+          </label>
 
-        <div id="planOutput" class="plan-output">Enter missed years to see your plan.</div>
+          <label class="field">
+            <span>Start Date</span>
+            <input id="startDate" type="date" />
+          </label>
+        </div>
+        <div id="planOutput" class="plan-output">Enter your missed period to generate your plan.</div>
       </div>
     </section>
   </main>

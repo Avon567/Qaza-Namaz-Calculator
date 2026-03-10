@@ -1,149 +1,53 @@
 const prayers = [
-  { name: "Fajr", rakats: "2 Fard" },
-  { name: "Dhuhr", rakats: "4 Fard" },
-  { name: "Asr", rakats: "4 Fard" },
-  { name: "Maghrib", rakats: "3 Fard" },
-  { name: "Isha", rakats: "4 Fard" },
-  { name: "Witr", rakats: "3 Wajib" }
-];
-
-const elements = {
-  years: document.getElementById("yearsMissed"),
-  months: document.getElementById("monthsMissed"),
-  menstrualDays: document.getElementById("menstrualDays"),
-  femalePanel: document.getElementById("femalePanel"),
-  totalDays: document.getElementById("totalDays"),
-  prayerCards: document.getElementById("prayerCards"),
-  planMessage: document.getElementById("planMessage"),
-  dailyTarget: document.getElementById("dailyTarget"),
-  genderSwitch: document.getElementById("genderSwitch")
-};
-
-const state = {
-  gender: "male"
-};
-
-function clamp(num, min, max) {
-  return Math.min(Math.max(num, min), max);
-}
-
-function numberFromInput(input, fallback = 0) {
-  const val = Number(input.value);
-  return Number.isFinite(val) ? val : fallback;
-}
-
-function getTotalMissedDays() {
-  const years = clamp(numberFromInput(elements.years), 0, 120);
-  const months = clamp(numberFromInput(elements.months), 0, 11);
-  const totalMonths = years * 12 + months;
-  const rawDays = totalMonths * 30;
-
-  if (state.gender === "female") {
-    const menstrualDays = clamp(numberFromInput(elements.menstrualDays), 0, 15);
-    return Math.max(rawDays - menstrualDays * totalMonths, 0);
-  }
-
-  return rawDays;
-}
-
-function renderPrayerCards(totalDays) {
-  elements.prayerCards.innerHTML = "";
-
-  prayers.forEach((prayer) => {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <h3>${prayer.name}</h3>
-      <p>${prayer.rakats}</p>
-      <strong>${totalDays.toLocaleString()}</strong>
-    `;
-    elements.prayerCards.appendChild(card);
-  });
-}
-
-function updatePlan(totalDays) {
-  const target = clamp(numberFromInput(elements.dailyTarget, 5), 1, 50);
-  elements.dailyTarget.value = target;
-
-  if (!totalDays) {
-    elements.planMessage.textContent = "Enter missed years to see your plan.";
-    return;
-  }
-
-  const neededDays = Math.ceil(totalDays / target);
-  const years = Math.floor(neededDays / 365);
-  const months = Math.floor((neededDays % 365) / 30);
-  const days = neededDays % 30;
-
-  elements.planMessage.textContent = `At ${target} full prayer-day(s) daily, you can finish in ~${years} years, ${months} months, ${days} days (${neededDays} days total).`;
-}
-
-function recalculate() {
-  const totalDays = getTotalMissedDays();
-  elements.totalDays.textContent = totalDays.toLocaleString();
-  renderPrayerCards(totalDays);
-  updatePlan(totalDays);
-}
-
-function setGender(nextGender) {
-  state.gender = nextGender;
-  [...elements.genderSwitch.querySelectorAll("button")].forEach((btn) => {
-    btn.classList.toggle("active", btn.dataset.gender === nextGender);
-  });
-  elements.femalePanel.classList.toggle("hidden", nextGender !== "female");
-  recalculate();
-}
-
-["input", "change"].forEach((eventName) => {
-  [elements.years, elements.months, elements.menstrualDays, elements.dailyTarget].forEach((input) => {
-    input.addEventListener(eventName, recalculate);
-  });
-});
-
-elements.genderSwitch.addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-gender]");
-  if (button) {
-    setGender(button.dataset.gender);
-  }
-});
-
-recalculate();
-  { name: 'Fajr', rakat: '2 Fard' },
-  { name: 'Dhuhr', rakat: '4 Fard' },
-  { name: 'Asr', rakat: '4 Fard' },
-  { name: 'Maghrib', rakat: '3 Fard' },
-  { name: 'Isha', rakat: '4 Fard' },
-  { name: 'Witr', rakat: '3 Wajib' }
+  { key: 'fajr', name: 'Fajr', units: '2 Fard', obligatory: true },
+  { key: 'dhuhr', name: 'Dhuhr', units: '4 Fard', obligatory: true },
+  { key: 'asr', name: 'Asr', units: '4 Fard', obligatory: true },
+  { key: 'maghrib', name: 'Maghrib', units: '3 Fard', obligatory: true },
+  { key: 'isha', name: 'Isha', units: '4 Fard', obligatory: true },
+  { key: 'witr', name: 'Witr', units: '3 Wajib', obligatory: false }
 ];
 
 const el = {
   years: document.getElementById('yearsMissed'),
   months: document.getElementById('monthsMissed'),
+  calendarType: document.getElementById('calendarType'),
+  missedRatio: document.getElementById('missedRatio'),
   maleBtn: document.getElementById('maleBtn'),
   femaleBtn: document.getElementById('femaleBtn'),
+  includeWitr: document.getElementById('includeWitr'),
   femaleFields: document.getElementById('femaleFields'),
   menstrualDays: document.getElementById('menstrualDays'),
+  nifasDays: document.getElementById('nifasDays'),
   totalDays: document.getElementById('totalDays'),
   prayerCards: document.getElementById('prayerCards'),
   dailyTarget: document.getElementById('dailyTarget'),
+  startDate: document.getElementById('startDate'),
   planOutput: document.getElementById('planOutput')
 };
 
 let selectedGender = 'male';
 
-function clamp(num, min, max) {
-  return Math.min(max, Math.max(min, Number(num) || 0));
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, Number(value) || 0));
 }
 
-function createPrayerCards() {
+function setDefaultStartDate() {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  el.startDate.value = `${yyyy}-${mm}-${dd}`;
+}
+
+function createCards() {
   el.prayerCards.innerHTML = '';
   prayers.forEach((prayer) => {
     const card = document.createElement('article');
     card.className = 'card';
     card.innerHTML = `
-      <h3>${prayer.name}</h3>
-      <small>${prayer.rakat}</small>
-      <div class="count" data-prayer="${prayer.name}">0</div>
+      <h4>${prayer.name}</h4>
+      <small>${prayer.units}</small>
+      <div class="count" data-count="${prayer.key}">0</div>
     `;
     el.prayerCards.append(card);
   });
@@ -160,51 +64,95 @@ function setGender(gender) {
   calculate();
 }
 
+function getBaseDays(years, months) {
+  const calendar = el.calendarType.value;
+  if (calendar === 'solar') {
+    return Math.round(years * 365 + months * (365 / 12));
+  }
+  return Math.round(years * 354 + months * 29.5);
+}
+
 function calculate() {
   const years = clamp(el.years.value, 0, 120);
   const months = clamp(el.months.value, 0, 11);
-  const baseDays = Math.round((years * 12 + months) * 30.4375);
+  const ratio = clamp(el.missedRatio.value, 1, 5);
+  const includeWitr = el.includeWitr.checked;
 
-  let deductedDays = 0;
+  const baseDays = getBaseDays(years, months);
+
+  let exemptDays = 0;
   if (selectedGender === 'female') {
-    const periodDays = clamp(el.menstrualDays.value, 0, 15);
-    deductedDays = Math.round((years * 12 + months) * periodDays);
+    const menstrualDays = clamp(el.menstrualDays.value, 0, 15);
+    const nifasDays = clamp(el.nifasDays.value, 0, 400);
+    exemptDays = Math.round((years * 12 + months) * menstrualDays) + nifasDays;
   }
 
-  const totalDays = Math.max(0, baseDays - deductedDays);
-  el.totalDays.textContent = totalDays.toLocaleString();
+  const prayerDays = Math.max(0, baseDays - exemptDays);
+  const effectivePrayerDays = Math.round(prayerDays * (ratio / 5));
 
-  document.querySelectorAll('[data-prayer]').forEach((item) => {
-    item.textContent = totalDays.toLocaleString();
+  el.totalDays.textContent = effectivePrayerDays.toLocaleString();
+
+  prayers.forEach((prayer) => {
+    const countEl = document.querySelector(`[data-count="${prayer.key}"]`);
+    if (!countEl) return;
+
+    if (prayer.key === 'witr' && !includeWitr) {
+      countEl.textContent = 'Excluded';
+      return;
+    }
+
+    if (!prayer.obligatory || prayer.obligatory) {
+      countEl.textContent = effectivePrayerDays.toLocaleString();
+    }
   });
 
-  const dailyTarget = clamp(el.dailyTarget.value, 1, 20) || 1;
-  const requiredDays = Math.ceil(totalDays / dailyTarget);
+  const dailyTarget = clamp(el.dailyTarget.value, 1, 20);
+  const totalUnitsPerDay = includeWitr ? 6 : 5;
+  const totalPrayerUnits = effectivePrayerDays * totalUnitsPerDay;
+  const planDays = Math.ceil(effectivePrayerDays / dailyTarget);
 
-  if (totalDays === 0) {
-    el.planOutput.textContent = 'Enter missed years/months to see your plan.';
+  if (effectivePrayerDays === 0) {
+    el.planOutput.textContent = 'Enter your missed period to generate your plan.';
     return;
   }
 
-  const yearsPart = Math.floor(requiredDays / 365);
-  const monthsPart = Math.floor((requiredDays % 365) / 30);
-  const daysPart = requiredDays % 30;
+  const startDate = new Date(el.startDate.value || Date.now());
+  const finishDate = new Date(startDate);
+  finishDate.setDate(finishDate.getDate() + planDays);
+
+  const finishText = finishDate.toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+
+  const yearsPart = Math.floor(planDays / 365);
+  const monthsPart = Math.floor((planDays % 365) / 30);
+  const daysPart = planDays % 30;
 
   const parts = [];
   if (yearsPart) parts.push(`${yearsPart} year${yearsPart > 1 ? 's' : ''}`);
   if (monthsPart) parts.push(`${monthsPart} month${monthsPart > 1 ? 's' : ''}`);
   if (daysPart) parts.push(`${daysPart} day${daysPart > 1 ? 's' : ''}`);
 
-  const duration = parts.join(', ');
-  el.planOutput.textContent = `If you complete ${dailyTarget} full day(s) of qaza daily, it will take approximately ${requiredDays.toLocaleString()} days (${duration}).`;
+  el.planOutput.textContent = `Estimated qaza prayer-days: ${effectivePrayerDays.toLocaleString()} (${totalPrayerUnits.toLocaleString()} total prayer slots including${includeWitr ? '' : ' no'} Witr). If you complete ${dailyTarget} qaza day(s) per day, expected completion is about ${planDays.toLocaleString()} days (${parts.join(', ')}) by ${finishText}.`;
 }
 
-createPrayerCards();
+createCards();
+setDefaultStartDate();
 setGender('male');
 
-[el.years, el.months, el.menstrualDays, el.dailyTarget].forEach((input) => {
-  input.addEventListener('input', calculate);
-});
+[
+  el.years,
+  el.months,
+  el.calendarType,
+  el.missedRatio,
+  el.includeWitr,
+  el.menstrualDays,
+  el.nifasDays,
+  el.dailyTarget,
+  el.startDate
+].forEach((node) => node.addEventListener('input', calculate));
 
 el.maleBtn.addEventListener('click', () => setGender('male'));
 el.femaleBtn.addEventListener('click', () => setGender('female'));
