@@ -1,3 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Qaza Namaz Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>Qaza Namaz Calculator</h1>
+        <p>Estimate your missed prayers and build a realistic recovery plan.</p>
+      </header>
+
+      <section class="panel input-panel" aria-label="Input fields">
+        <div class="grid-two">
+          <label class="field">
+            <span>Years Missed</span>
+            <input id="yearsMissed" type="number" min="0" max="120" value="0" />
+          </label>
+
+          <label class="field">
+            <span>Months Missed</span>
+            <input id="monthsMissed" type="number" min="0" max="11" value="0" />
+          </label>
+        </div>
+
+        <div class="field" role="group" aria-labelledby="genderLegend">
+          <span id="genderLegend">Gender</span>
+          <div class="segmented" id="genderSwitch">
+            <button type="button" data-gender="male" class="active">Male</button>
+            <button type="button" data-gender="female">Female</button>
+          </div>
+        </div>
+
+        <div id="femalePanel" class="female-panel hidden">
+          <label class="field">
+            <span>Avg. Menstrual Days per Month</span>
+            <input id="menstrualDays" type="number" min="0" max="15" placeholder="e.g. 6" />
+          </label>
+          <small>These days are deducted from total make-up days.</small>
+        </div>
+      </section>
+
+      <section class="panel result-panel" aria-live="polite">
+        <h2>Total Days to Make Up</h2>
+        <p id="totalDays" class="big-number">0</p>
+
+        <div class="cards" id="prayerCards"></div>
+
+        <div class="recovery">
+          <label class="field-inline">
+            <span>Recovery Plan: Daily Qaza Target</span>
+            <div class="inline-input-wrap">
+              <input id="dailyTarget" type="number" min="1" max="50" value="5" />
+              <span>full days of prayer per day</span>
+            </div>
+          </label>
+
+          <div id="planMessage" class="plan-message">
+            Enter missed years to see your plan.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
 <!DOCTYPE html>
 <html lang="en">
 <head>
